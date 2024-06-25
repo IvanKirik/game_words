@@ -198,6 +198,7 @@ export class App {
       this.modalElement.update(this.updateToken.bind(this));
     }
 
+    this.mouse.tick();
     requestAnimationFrame(this.gameLoop.bind(this));
   }
 

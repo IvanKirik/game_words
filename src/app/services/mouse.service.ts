@@ -27,8 +27,11 @@ export class MouseService {
   public x = 0;
   public y = 0;
 
-  public touchSbj$ = new BehaviorSubject<boolean>(false);
-  public clickSbj$ = new BehaviorSubject<boolean>(false);
+  public touch: boolean = false;
+  public click: boolean = false;
+
+  public mouseDown$ = new BehaviorSubject<boolean>(false);
+  public touchDown$ = new BehaviorSubject<boolean>(false);
 
   public streamEvents$: Observable<{ x: number; y: number }[]>;
   public mouseBtnState$: Observable<boolean>;
@@ -54,16 +57,27 @@ export class MouseService {
     const mouseUp$ = fromEvent(this.element, 'mouseup');
     const mouseOut$ = fromEvent(this.element, 'mouseout');
 
+    mouseMove$
+      .pipe(
+        map((e: unknown) => {
+          const event = e as MouseEvent;
+          event.preventDefault();
+          this.x = (event.clientX - this.rect.left) / this.scaleX;
+          this.y = (event.clientY - this.rect.top) / this.scaleY;
+        }),
+      )
+      .subscribe();
+
     this.mouseBtnState$ = merge(
       mouseUp$.pipe(
-        tap(e => (e.preventDefault(), (this.x = 0), (this.y = 0))),
+        tap(e => (e.preventDefault(), (this.click = true))),
         map(() => false),
       ),
       mouseDown$.pipe(
         tap(e => e.preventDefault()),
         map(() => true),
       ),
-    ).pipe(tap(click => this.clickSbj$.next(click)));
+    ).pipe(tap(v => this.mouseDown$.next(v)));
 
     const streamMouse$ = mouseDown$.pipe(
       switchMap(() =>
@@ -75,8 +89,6 @@ export class MouseService {
               x: (event.clientX - this.rect.left) / this.scaleX,
               y: (event.clientY - this.rect.top) / this.scaleY,
             };
-            this.x = x;
-            this.y = y;
             return { x, y };
           }),
           pairwise(),
@@ -94,14 +106,23 @@ export class MouseService {
 
     this.touchBtnState$ = merge(
       touchEnd$.pipe(
-        tap(e => (e.preventDefault(), (this.touchX = 0), (this.touchY = 0))),
+        tap(e => e.preventDefault()),
         map(() => false),
       ),
-      touchStart$.pipe(
-        tap(e => e.preventDefault()),
-        map(() => true),
-      ),
-    ).pipe(tap(click => this.touchSbj$.next(click)));
+      touchStart$
+        .pipe(
+          tap((e: unknown) => {
+            const event = e as TouchEvent;
+            event.preventDefault();
+            this.touch = true;
+            const touch = event.touches[0];
+            this.touchX = (touch.clientX - this.rect.left) / this.scaleX;
+            this.touchY = (touch.clientY - this.rect.top) / this.scaleY;
+          }),
+          map(() => true),
+        )
+        .pipe(tap(v => this.touchDown$.next(v))),
+    );
 
     const touchStream$ = touchStart$.pipe(
       switchMap(() =>
@@ -110,13 +131,10 @@ export class MouseService {
             const event = e as TouchEvent;
             event.preventDefault();
             const touch = event.touches[0];
-            const { x, y } = {
+            return {
               x: (touch.clientX - this.rect.left) / this.scaleX,
               y: (touch.clientY - this.rect.top) / this.scaleY,
             };
-            this.touchX = x;
-            this.touchY = y;
-            return { x, y };
           }),
           pairwise(),
           takeUntil(touchEnd$),
@@ -126,6 +144,11 @@ export class MouseService {
     );
 
     this.streamEvents$ = merge(streamMouse$, touchStream$);
+  }
+
+  public tick() {
+    this.click = false;
+    this.touch = false;
   }
 
   private update(element: HTMLCanvasElement) {

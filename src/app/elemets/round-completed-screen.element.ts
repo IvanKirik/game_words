@@ -45,7 +45,7 @@ export class RoundCompletedScreenElement {
   public update(nextRound: () => void): void {
     if (
       this.btn &&
-      this.mouse.clickSbj$.getValue() &&
+      this.mouse.click &&
       this.mouse.x > this.btn.xStart &&
       this.mouse.x < this.btn.xEnd &&
       this.mouse.y > this.btn.yStart &&
@@ -55,7 +55,7 @@ export class RoundCompletedScreenElement {
     }
     if (
       this.btn &&
-      this.mouse.touchSbj$.getValue() &&
+      this.mouse.touch &&
       this.mouse.touchX > this.btn.xStart &&
       this.mouse.touchX < this.btn.xEnd &&
       this.mouse.touchY > this.btn.yStart &&

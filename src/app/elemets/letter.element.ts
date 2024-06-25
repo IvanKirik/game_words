@@ -35,7 +35,7 @@ export class LetterElement {
   public update(onClick: (letter: string) => void): void {
     if (
       this.checkCoordination(this.mouse.x, this.mouse.y) &&
-      this.mouse.clickSbj$.getValue()
+      this.mouse.mouseDown$.getValue()
     ) {
       if (this.counter === 0) {
         onClick(this.letter);
@@ -47,7 +47,7 @@ export class LetterElement {
 
     if (
       this.checkCoordination(this.mouse.touchX, this.mouse.touchY) &&
-      this.mouse.touchSbj$.getValue()
+      this.mouse.touchDown$.getValue()
     ) {
       if (this.counter === 0) {
         onClick(this.letter);
@@ -59,19 +59,22 @@ export class LetterElement {
 
     if (
       !this.checkCoordination(this.mouse.x, this.mouse.y) &&
-      this.mouse.clickSbj$.getValue()
+      this.mouse.mouseDown$.getValue()
     ) {
       this.counter = 0;
     }
 
     if (
       !this.checkCoordination(this.mouse.touchX, this.mouse.touchY) &&
-      this.mouse.touchSbj$.getValue()
+      this.mouse.touchDown$.getValue()
     ) {
       this.counter = 0;
     }
 
-    if (!this.mouse.clickSbj$.getValue() && !this.mouse.touchSbj$.getValue()) {
+    if (
+      !this.mouse.mouseDown$.getValue() &&
+      !this.mouse.touchDown$.getValue()
+    ) {
       this.counter = 0;
       this.mainBackground = '#fff';
       this.addBackground = '#58595B';
