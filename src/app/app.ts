@@ -6,6 +6,7 @@ export class App {
             throw Error('Canvas element not found');
         }
         this.canvas = canvas;
+
     }
 
     public start(): void {
