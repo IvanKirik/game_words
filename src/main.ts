@@ -1,5 +1,6 @@
 import './style.css'
 import {App} from "./app/app.ts";
+import './app/services/mouse.service.ts';
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>

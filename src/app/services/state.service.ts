@@ -3,7 +3,7 @@ import {BehaviorSubject, map, switchMap, tap} from "rxjs";
 import {IRound} from "../types";
 import {roundMapper} from "../mappers";
 
-class StateService {
+export class StateService {
     private readonly currentRoundIndex = localStorage.getItem(CURRENT_ROUND_TOKEN);
     private readonly currentGameState = localStorage.getItem(CURRENT_GAME_STATE_TOKEN);
 
@@ -122,5 +122,3 @@ class StateService {
         this.roundsSbj$.next(rounds);
     }
 }
-
-export const stateService = new StateService();

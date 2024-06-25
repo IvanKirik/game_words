@@ -1,6 +1,6 @@
 import {fromEvent, map, merge, Observable, pairwise, switchMap, takeUntil} from "rxjs";
 
-class MouseService {
+export class MouseService {
     private readonly element: HTMLCanvasElement;
     private rect:  DOMRect;
     private computedStyles: CSSStyleDeclaration;
@@ -188,5 +188,3 @@ class MouseService {
         }
     }
 }
-
-export const mouse = new MouseService(document.querySelector('canvas'));
