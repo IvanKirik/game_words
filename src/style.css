@@ -36,17 +36,12 @@ body {
 
 #canvas {
   background-color: #2B344B;
+  max-height: 100vh;
 }
 
 @media (hover: none) {
   #canvas {
     width: 100%;
-    height: 100%;
-  }
-}
-
-@media (hover: hover) {
-  #canvas {
     height: 100%;
   }
 }
