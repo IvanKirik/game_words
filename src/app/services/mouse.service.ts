@@ -89,10 +89,8 @@ export class MouseService {
 
     this.mouseBtnState$ = merge(
       this.mouseUp$.pipe(map(() => false)),
-      mouseDown$.pipe(map(() => true))
-    ).pipe(
-        tap((move) => this.touchMove = move)
-    )
+      mouseDown$.pipe(map(() => true)),
+    ).pipe(tap(move => (this.touchMove = move)))
 
     this.stream$ = mouseDown$.pipe(
       switchMap(() =>
@@ -126,7 +124,7 @@ export class MouseService {
         touchMove$.pipe(
           map((e: unknown) => {
             const event = e as TouchEvent
-            const touch = event.touches[0] // Будем обрабатывать только первое касание
+            const touch = event.touches[0]
             return {
               x: (touch.clientX - this.rect.left) / this.scaleX,
               y: (touch.clientY - this.rect.top) / this.scaleY,
@@ -144,7 +142,7 @@ export class MouseService {
     this.pLeft = this.left
     this.pRight = this.right
     this.pMiddle = this.middle
-    this.tap = false;
+    this.tap = false
   }
 
   private handleTouchStart(event: TouchEvent) {

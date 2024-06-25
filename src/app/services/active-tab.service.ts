@@ -52,4 +52,18 @@ export class ActiveTabService {
       this.checkActiveTab()
     }
   }
+
+  public isMobileDevice() {
+    const userAgent = navigator.userAgent || navigator.vendor || ''
+
+    if (/android/i.test(userAgent)) {
+      return true
+    }
+
+    if (/iPhone|iPad|iPod/i.test(userAgent)) {
+      return true
+    }
+
+    return /windows phone/i.test(userAgent)
+  }
 }

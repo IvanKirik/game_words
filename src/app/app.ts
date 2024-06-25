@@ -20,7 +20,7 @@ import Level3 from '../assets/data/3.json'
 import { IGridCellSize } from './types'
 import { calculateCellSize, checkWordUtil } from './utils'
 import { lettersMapper } from './mappers'
-import { switchMap, tap } from 'rxjs'
+import { merge, switchMap, tap } from 'rxjs'
 import ModalImg from '../assets/images/popup_ribbon.png'
 
 export class App {
@@ -50,7 +50,8 @@ export class App {
   /** Images */
   private modalHeaderImg: HTMLImageElement = new Image()
 
-  public touch = false;
+  public touch = false
+  public mouseDown = false
 
   constructor(canvas: HTMLCanvasElement | null) {
     if (!canvas) {
@@ -72,7 +73,6 @@ export class App {
 
     this.canvas.width = CANVAS_WIDTH
     this.canvas.height = CANVAS_HEIGHT
-
     this.init()
   }
 
@@ -104,33 +104,14 @@ export class App {
         this.hintLettersElement = new HintLettersElement(this.ctx)
       }
     })
-    this.mouse.mouseBtnState$
-      .pipe(
-        switchMap(btnState =>
-          this.state.hintLetters$.pipe(
-            tap(hintLetters => (this.hints = hintLetters)),
-            switchMap(hintLetters =>
-              this.state.currentRound$.pipe(
-                tap(words => {
-                  if (!words) return
-                  const word = checkWordUtil(hintLetters.join(''), words.words)
-                  if (word && !btnState) {
-                    this.state.updateCurrentRound(word.word)
-                  }
-                  if (!word && !btnState) {
-                    this.state.clearHintLetters()
-                  }
-                }),
-              ),
-            ),
-          ),
-        ),
-      )
-      .subscribe()
 
-    this.mouse.touchBtnState$
+    merge(
+      this.mouse.mouseBtnState$.pipe(
+        tap(btnState => (this.mouseDown = btnState)),
+      ),
+      this.mouse.touchBtnState$.pipe(tap(touch => (this.touch = touch))),
+    )
       .pipe(
-          tap((touch) => this.touch = touch),
         switchMap(btnState =>
           this.state.hintLetters$.pipe(
             tap(hintLetters => (this.hints = hintLetters)),
@@ -187,8 +168,9 @@ export class App {
       !this.titleElement ||
       !this.gamePanelElement ||
       !this.hintLettersElement
-    )
+    ) {
       return
+    }
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 
     if (this.roundCompletedScreen) {
@@ -199,7 +181,11 @@ export class App {
       this.gridElement.render()
       this.gamePanelElement.render()
       this.hintLettersElement.render(this.hints)
-      this.gamePanelElement.update(this.addLetter.bind(this), this.touch)
+      this.gamePanelElement.update(
+        this.addLetter.bind(this),
+        this.touch,
+        this.mouseDown,
+      )
     }
 
     if (this.modalElement) {

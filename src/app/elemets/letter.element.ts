@@ -32,43 +32,44 @@ export class LetterElement {
     this.createCircle(this.mainBackground, this.x, this.y, this.letter)
   }
 
-  public update(onClick: (letter: string) => void, touch: boolean): void {
-    // if (this.checkCoordination(this.mouse.x, this.mouse.y) && this.mouse.down) {
-    //   if (this.counter === 0) {
-    //     onClick(this.letter)
-    //     this.counter++
-    //   }
-    //   this.mainBackground = '#E96FA4'
-    //   this.addBackground = '#AF638C'
-    // }
-    //
-    // if (!this.checkCoordination(this.mouse.x, this.mouse.y)) {
-    //   this.counter = 0
-    // }
-    //
-    // if (this.mouse.up) {
-    //   this.counter = 0
-    //   this.mainBackground = '#fff'
-    //   this.addBackground = '#58595B'
-    // }
+  public update(
+    onClick: (letter: string) => void,
+    touch: boolean,
+    mouseDown: boolean,
+  ): void {
+    if (this.checkCoordination(this.mouse.x, this.mouse.y) && mouseDown) {
+      if (this.counter === 0) {
+        onClick(this.letter)
+        this.counter++
+      }
+      this.mainBackground = '#E96FA4'
+      this.addBackground = '#AF638C'
+    }
 
     if (this.checkCoordination(this.mouse.touchX, this.mouse.touchY) && touch) {
-        if (this.counter === 0) {
-            onClick(this.letter);
-            this.counter++;
-        }
-        this.mainBackground = '#E96FA4'
-        this.addBackground = '#AF638C'
+      if (this.counter === 0) {
+        onClick(this.letter)
+        this.counter++
+      }
+      this.mainBackground = '#E96FA4'
+      this.addBackground = '#AF638C'
     }
 
-    if (!this.checkCoordination(this.mouse.touchX, this.mouse.touchY)) {
-        this.counter = 0;
+    if (!this.checkCoordination(this.mouse.x, this.mouse.y) && mouseDown) {
+      this.counter = 0
     }
 
-    if (!touch) {
-        this.counter = 0;
-        this.mainBackground = '#fff';
-        this.addBackground = '#58595B';
+    if (
+      !this.checkCoordination(this.mouse.touchX, this.mouse.touchY) &&
+      touch
+    ) {
+      this.counter = 0
+    }
+
+    if (!mouseDown && !touch) {
+      this.counter = 0
+      this.mainBackground = '#fff'
+      this.addBackground = '#58595B'
     }
   }
 

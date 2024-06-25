@@ -59,7 +59,13 @@ export class GamePanelElement {
     this.lettersEntity.forEach(letter => letter.render())
   }
 
-  public update(addLetter: (letter: string) => void, touch: boolean): void {
-    this.lettersEntity.forEach(letter => letter.update(addLetter, touch))
+  public update(
+    addLetter: (letter: string) => void,
+    touch: boolean,
+    mouseDown: boolean,
+  ): void {
+    this.lettersEntity.forEach(letter =>
+      letter.update(addLetter, touch, mouseDown),
+    )
   }
 }
