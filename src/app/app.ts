@@ -1,13 +1,12 @@
 import {CANVAS_HEIGHT, CANVAS_WIDTH, TOP_MARGIN_TITLE} from "./constants.ts";
 import {GamePanelElement, GridElement, HintLettersElement, TitleElement} from "./elemets";
-import {StateService} from "./services";
+import {StateService, MouseService, ActiveTabService} from "./services";
 import Level1 from '../assets/data/1.json';
 import Level2 from '../assets/data/2.json';
 import Level3 from '../assets/data/3.json';
 import {IGridCellSize} from "./types/grid-cell-size.interface.ts";
 import {calculateCellSize, checkWordUtil} from "./utils";
 import {lettersMapper} from "./mappers";
-import {MouseService} from "./services/mouse.service.ts";
 import {switchMap, tap} from "rxjs";
 
 export class App {
@@ -28,6 +27,7 @@ export class App {
     /** Services */
     private readonly state: StateService;
     private readonly mouse: MouseService;
+    private readonly activeTabService: ActiveTabService;
 
     /** Data */
     private hints: string[] = [];
@@ -39,6 +39,7 @@ export class App {
 
         this.state = new StateService();
         this.mouse = new MouseService(canvas);
+        this.activeTabService = new ActiveTabService(this.state);
 
         /** Added levels */
         this.state.updateRounds([Level1, Level2, Level3])
@@ -124,7 +125,7 @@ export class App {
     }
 
     private gameLoop(): void {
-        if (!this.ctx || !this.gridElement || !this.titleElement) return;
+        if (!this.ctx || !this.gridElement || !this.titleElement || !this.gamePanelElement || !this.hintLettersElement) return;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         if (this.roundCompletedScreen) {
@@ -133,11 +134,11 @@ export class App {
         } else if (!this.roundCompletedScreen){
             this.titleElement.render();
             this.gridElement.render();
-            this.gamePanelElement?.render();
-            this.hintLettersElement?.render(this.hints);
+            this.gamePanelElement.render();
+            this.hintLettersElement.render(this.hints);
 
 
-            this.gamePanelElement?.update(this.addLetter.bind(this));
+            this.gamePanelElement.update(this.addLetter.bind(this));
         }
 
         requestAnimationFrame(this.gameLoop.bind(this));
@@ -145,5 +146,9 @@ export class App {
 
     private addLetter(letter: string): void {
         this.state.updateHintLetters(letter);
+    }
+
+    private updateScreen(): void {
+        this.activeTabService.updateToken$.next(true);
     }
 }

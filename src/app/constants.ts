@@ -1,6 +1,7 @@
 /** Storage tokens */
 export const CURRENT_ROUND_TOKEN = 'CURRENT_ROUND_TOKEN';
 export const CURRENT_GAME_STATE_TOKEN = 'CURRENT_GAME_STATE_TOKEN';
+export const ACTIVE_TAB_TOKEN = 'ACTIVE_TAB_TOKEN';
 
 /** Size */
 export const CANVAS_WIDTH = 640;
