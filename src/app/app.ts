@@ -1,13 +1,14 @@
 import {CANVAS_HEIGHT, CANVAS_WIDTH, TOP_MARGIN_TITLE} from "./constants.ts";
-import {GamePanelElement, GridElement, TitleElement} from "./elemets";
+import {GamePanelElement, GridElement, HintLettersElement, TitleElement} from "./elemets";
 import {StateService} from "./services";
 import Level1 from '../assets/data/1.json';
 import Level2 from '../assets/data/2.json';
 import Level3 from '../assets/data/3.json';
 import {IGridCellSize} from "./types/grid-cell-size.interface.ts";
-import {calculateCellSize} from "./utils";
+import {calculateCellSize, checkWordUtil} from "./utils";
 import {lettersMapper} from "./mappers";
 import {MouseService} from "./services/mouse.service.ts";
+import {switchMap, tap} from "rxjs";
 
 export class App {
     /** Canvas */
@@ -18,6 +19,7 @@ export class App {
     private gridElement: GridElement | undefined;
     private titleElement: TitleElement | undefined;
     private gamePanelElement: GamePanelElement | undefined;
+    private hintLettersElement: HintLettersElement | undefined;
     private roundCompletedScreen: any | undefined;
 
     /** Cell sizes depending on the number of words */
@@ -26,6 +28,9 @@ export class App {
     /** Services */
     private readonly state: StateService;
     private readonly mouse: MouseService;
+
+    /** Data */
+    private hints: string[] = [];
 
     constructor(canvas: HTMLCanvasElement | null) {
         if (!canvas) {
@@ -58,7 +63,62 @@ export class App {
 
                 this.titleElement = new TitleElement(this.ctx, this.canvas.width / 2, TOP_MARGIN_TITLE, round.id);
                 this.gridElement = new GridElement(this.ctx, round.words, this.cellSize.width);
-                this.gamePanelElement = new GamePanelElement(this.ctx, lettersMapper.toLetters(round.words), this.mouse)
+                this.gamePanelElement = new GamePanelElement(this.ctx, lettersMapper.toLetters(round.words), this.mouse);
+                this.hintLettersElement = new HintLettersElement(this.ctx);
+            }
+        })
+        this.mouse.mouseBtnState$
+            .pipe(
+                switchMap((btnState) => this.state.hintLetters$.pipe(
+                    tap((hintLetters) => this.hints = hintLetters),
+                    switchMap((hintLetters) =>  this.state.currentRound$
+                        .pipe(
+                            tap((words) => {
+                                if (!words) return;
+                                const word = checkWordUtil(hintLetters.join(''), words.words);
+                                if (word && !btnState) {
+                                    this.state.updateCurrentRound(word.word);
+                                }
+                                if (!word && !btnState) {
+                                    this.state.clearHintLetters();
+                                }
+                            })
+                        )
+                    ))
+                )).subscribe()
+
+        this.mouse.touchBtnState$
+            .pipe(
+                // tap((v) => this.touch = v),
+                switchMap((btnState) => this.state.hintLetters$.pipe(
+                    tap((hintLetters) => this.hints = hintLetters),
+                    switchMap((hintLetters) =>  this.state.currentRound$
+                        .pipe(
+                            tap((words) => {
+                                if (!words) return;
+                                const word = checkWordUtil(hintLetters.join(''), words.words);
+                                if (word && !btnState) {
+                                    this.state.updateCurrentRound(word.word);
+                                }
+                                if (!word && !btnState) {
+                                    this.state.clearHintLetters();
+                                }
+                            })
+                        )
+                    ))
+                )).subscribe()
+
+        this.state.roundComplete$.subscribe((value) => {
+            if (value) {
+                // this.roundCompletedScreen = new RoundCompletedScreen(this.ctx!, this.canvas.width / 2, 257, value)
+            } else {
+                this.roundCompletedScreen = undefined;
+            }
+        })
+
+        this.state.warning$.subscribe((v) => {
+            if (v) {
+                // this.modal = new Modal(this.ctx!, this.canvas.width / 2 - MODAL_WIDTH / 2, TOP_MARGIN_MODAL, this.img);
             }
         })
     }
@@ -74,7 +134,7 @@ export class App {
             this.titleElement.render();
             this.gridElement.render();
             this.gamePanelElement?.render();
-
+            this.hintLettersElement?.render(this.hints);
 
 
             this.gamePanelElement?.update(this.addLetter.bind(this));
