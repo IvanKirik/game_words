@@ -24,3 +24,5 @@ export const CELL_BACKGROUND = '#ffffff';
 export const TEXT_COLOR = '#58595B';
 export const TEXT_COLOR_WHITE = '#ffffff';
 export const BACKGROUND_CIRCLE = '#3E4A68';
+export const BACKGROUND_BTN = '#65BD65';
+export const SHADOW_BTN = '#508853';

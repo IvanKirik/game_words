@@ -6,3 +6,4 @@ export * from './game-panel.element.ts';
 export * from './letter.element.ts';
 export * from './hint-letters.element.ts';
 export * from './hint-letter.element.ts';
+export * from './round-completed-screen.element.ts';

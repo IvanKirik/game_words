@@ -1,10 +1,10 @@
 import {CANVAS_HEIGHT, CANVAS_WIDTH, TOP_MARGIN_TITLE} from "./constants.ts";
-import {GamePanelElement, GridElement, HintLettersElement, TitleElement} from "./elemets";
+import {GamePanelElement, GridElement, HintLettersElement, RoundCompletedScreenElement, TitleElement} from "./elemets";
 import {StateService, MouseService, ActiveTabService} from "./services";
 import Level1 from '../assets/data/1.json';
 import Level2 from '../assets/data/2.json';
 import Level3 from '../assets/data/3.json';
-import {IGridCellSize} from "./types/grid-cell-size.interface.ts";
+import {IGridCellSize} from "./types";
 import {calculateCellSize, checkWordUtil} from "./utils";
 import {lettersMapper} from "./mappers";
 import {switchMap, tap} from "rxjs";
@@ -19,7 +19,7 @@ export class App {
     private titleElement: TitleElement | undefined;
     private gamePanelElement: GamePanelElement | undefined;
     private hintLettersElement: HintLettersElement | undefined;
-    private roundCompletedScreen: any | undefined;
+    private roundCompletedScreen: RoundCompletedScreenElement | undefined;
 
     /** Cell sizes depending on the number of words */
     private cellSize: IGridCellSize | undefined;
@@ -109,9 +109,9 @@ export class App {
                     ))
                 )).subscribe()
 
-        this.state.roundComplete$.subscribe((value) => {
-            if (value) {
-                // this.roundCompletedScreen = new RoundCompletedScreen(this.ctx!, this.canvas.width / 2, 257, value)
+        this.state.roundComplete$.subscribe((round) => {
+            if (round && this.ctx) {
+                this.roundCompletedScreen = new RoundCompletedScreenElement(this.ctx, this.canvas.width / 2, 257, round, this.mouse)
             } else {
                 this.roundCompletedScreen = undefined;
             }
@@ -130,7 +130,7 @@ export class App {
 
         if (this.roundCompletedScreen) {
             this.roundCompletedScreen.render();
-
+            this.roundCompletedScreen.update(this.mouse, this.nextRound.bind(this));
         } else if (!this.roundCompletedScreen){
             this.titleElement.render();
             this.gridElement.render();
@@ -141,6 +141,7 @@ export class App {
             this.gamePanelElement.update(this.addLetter.bind(this));
         }
 
+        this.mouse.tick();
         requestAnimationFrame(this.gameLoop.bind(this));
     }
 
@@ -148,7 +149,11 @@ export class App {
         this.state.updateHintLetters(letter);
     }
 
-    private updateScreen(): void {
+    private nextRound(): void {
+        this.state.nextRound();
+    }
+
+    private updateToken(): void {
         this.activeTabService.updateToken$.next(true);
     }
 }
