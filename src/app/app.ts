@@ -29,7 +29,7 @@ export class App {
     private readonly mouse: MouseService;
     private readonly activeTabService: ActiveTabService;
 
-    /** Data */
+    /** Hint letters */
     private hints: string[] = [];
 
     constructor(canvas: HTMLCanvasElement | null) {
