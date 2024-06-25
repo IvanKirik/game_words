@@ -157,6 +157,7 @@ export class App {
           this.modalHeaderImg,
           this.mouse,
         )
+        document.querySelector('body')!.style.background = '#0d0f16';
       }
     })
   }
