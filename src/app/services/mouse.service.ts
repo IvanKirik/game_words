@@ -70,11 +70,11 @@ export class MouseService {
 
     this.mouseBtnState$ = merge(
       mouseUp$.pipe(
-        tap(e => (e.preventDefault(), (this.click = true))),
+        tap(e => (e.preventDefault())),
         map(() => false),
       ),
       mouseDown$.pipe(
-        tap(e => e.preventDefault()),
+        tap(e => (e.preventDefault(), (this.click = true))),
         map(() => true),
       ),
     ).pipe(tap(v => this.mouseDown$.next(v)));
@@ -133,8 +133,7 @@ export class MouseService {
           }),
           map(() => true),
         )
-        .pipe(tap(v => this.touchDown$.next(v))),
-    );
+    ).pipe(tap(v => this.touchDown$.next(v)));
 
     const touchStream$ = touchStart$.pipe(
       switchMap(() =>
