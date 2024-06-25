@@ -6,9 +6,11 @@ export function drawCircleUtil(
   color: string,
   lineWidth: number,
 ) {
-  ctx.strokeStyle = color
-  ctx.lineWidth = lineWidth
-  ctx.beginPath()
-  ctx.arc(x, y, radius, 0, 2 * Math.PI)
-  ctx.stroke()
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = lineWidth;
+  ctx.beginPath();
+  ctx.arc(x, y, radius, 0, 2 * Math.PI);
+  ctx.stroke();
+  ctx.restore();
 }

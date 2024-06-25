@@ -1,15 +1,15 @@
-import { IBasicElement, WordRound } from '../types'
-import { ColElement } from './col.element.ts'
-import { WORD_PADDING } from '../constants.ts'
+import { WordRound } from '../types';
+import { ColElement } from './col.element.ts';
+import { WORD_PADDING } from '../constants.ts';
 
-export class RowElement implements IBasicElement {
-  private readonly x: number
-  private readonly y: number
-  private readonly size: number
-  private readonly ctx: CanvasRenderingContext2D
-  private readonly word: WordRound
+export class RowElement {
+  private readonly x: number;
+  private readonly y: number;
+  private readonly size: number;
+  private readonly ctx: CanvasRenderingContext2D;
+  private readonly word: WordRound;
 
-  private readonly cools: ColElement[] = []
+  private readonly cools: ColElement[] = [];
 
   constructor(
     ctx: CanvasRenderingContext2D,
@@ -18,25 +18,23 @@ export class RowElement implements IBasicElement {
     size: number,
     words: WordRound,
   ) {
-    this.ctx = ctx
-    this.x = x
-    this.y = y
-    this.size = size
-    this.word = words
+    this.ctx = ctx;
+    this.x = x;
+    this.y = y;
+    this.size = size;
+    this.word = words;
 
-    this.cools = this.create()
+    this.cools = this.create();
   }
 
   public render(): void {
-    this.cools.forEach(col => col.render())
+    this.cools.forEach(col => col.render());
   }
 
-  public update(): void {}
-
   private create(): ColElement[] {
-    const cools: ColElement[] = []
+    const cools: ColElement[] = [];
     this.word.word.split('').forEach((letter, index) => {
-      const col = this.x + index * (this.size + WORD_PADDING)
+      const col = this.x + index * (this.size + WORD_PADDING);
       cools.push(
         new ColElement(
           this.ctx,
@@ -46,8 +44,8 @@ export class RowElement implements IBasicElement {
           letter,
           !this.word.completed,
         ),
-      )
-    })
-    return cools
+      );
+    });
+    return cools;
   }
 }

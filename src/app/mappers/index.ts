@@ -1,2 +1,2 @@
-export * from './round.mapper.ts'
-export * from './letters.mapper.ts'
+export * from './round.mapper.ts';
+export * from './letters.mapper.ts';

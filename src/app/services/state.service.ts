@@ -1,34 +1,35 @@
-import { CURRENT_GAME_STATE_TOKEN, CURRENT_ROUND_TOKEN } from '../constants.ts'
-import { BehaviorSubject, map, switchMap, tap } from 'rxjs'
-import { IRound } from '../types'
-import { roundMapper } from '../mappers'
+import { CURRENT_GAME_STATE_TOKEN, CURRENT_ROUND_TOKEN } from '../constants.ts';
+import { BehaviorSubject, map, switchMap, tap } from 'rxjs';
+import { IRound } from '../types';
+import { roundMapper } from '../mappers';
 
 export class StateService {
-  private readonly currentRoundIndex = localStorage.getItem(CURRENT_ROUND_TOKEN)
+  private readonly currentRoundIndex =
+    localStorage.getItem(CURRENT_ROUND_TOKEN);
   private readonly currentGameState = localStorage.getItem(
     CURRENT_GAME_STATE_TOKEN,
-  )
+  );
 
   private readonly currentRoundIndex$ = new BehaviorSubject<number>(
     this.currentRoundIndex ? +this.currentRoundIndex : 0,
-  )
-  private readonly warningSbj$ = new BehaviorSubject<boolean>(false)
-  private readonly roundsSbj$ = new BehaviorSubject<IRound[]>([])
-  private readonly hintLettersSbj$ = new BehaviorSubject<string[]>([])
+  );
+  private readonly warningSbj$ = new BehaviorSubject<boolean>(false);
+  private readonly roundsSbj$ = new BehaviorSubject<IRound[]>([]);
+  private readonly hintLettersSbj$ = new BehaviorSubject<string[]>([]);
   private readonly roundCompletedSubj$ = new BehaviorSubject<null | IRound>(
     null,
-  )
+  );
 
-  public readonly warning$ = this.warningSbj$.asObservable()
-  public readonly roundComplete$ = this.roundCompletedSubj$.asObservable()
-  public readonly hintLetters$ = this.hintLettersSbj$.asObservable()
+  public readonly warning$ = this.warningSbj$.asObservable();
+  public readonly roundComplete$ = this.roundCompletedSubj$.asObservable();
+  public readonly hintLetters$ = this.hintLettersSbj$.asObservable();
   public readonly rounds$ = this.roundsSbj$.asObservable().pipe(
     tap(rounds => {
       if (!this.warningSbj$.getValue()) {
-        localStorage.setItem(CURRENT_GAME_STATE_TOKEN, JSON.stringify(rounds))
+        localStorage.setItem(CURRENT_GAME_STATE_TOKEN, JSON.stringify(rounds));
       }
     }),
-  )
+  );
   public readonly currentRound$ = this.currentRoundIndex$.asObservable().pipe(
     tap(index => localStorage.setItem(CURRENT_ROUND_TOKEN, index.toString())),
     switchMap(index =>
@@ -36,41 +37,41 @@ export class StateService {
         map(rounds => rounds[index]),
         tap(round => {
           if (!round.words.find(word => !word.completed)) {
-            this.roundCompletedSubj$.next(round)
+            this.roundCompletedSubj$.next(round);
           } else {
-            this.roundCompletedSubj$.next(null)
+            this.roundCompletedSubj$.next(null);
           }
         }),
       ),
     ),
-  )
+  );
 
   public nextRound(): void {
-    const current = this.currentRoundIndex$.getValue()
+    const current = this.currentRoundIndex$.getValue();
     if (current + 1 < this.roundsSbj$.getValue().length) {
-      this.currentRoundIndex$.next(current + 1)
-      this.roundCompletedSubj$.next(null)
+      this.currentRoundIndex$.next(current + 1);
+      this.roundCompletedSubj$.next(null);
     } else {
-      this.clearResult()
-      this.currentRoundIndex$.next(0)
-      this.roundCompletedSubj$.next(null)
+      this.clearResult();
+      this.currentRoundIndex$.next(0);
+      this.roundCompletedSubj$.next(null);
     }
   }
 
   public updateRounds(words: { words: string[] }[]): void {
     if (this.currentGameState) {
-      this.roundsSbj$.next(JSON.parse(this.currentGameState))
+      this.roundsSbj$.next(JSON.parse(this.currentGameState));
     } else {
-      this.roundsSbj$.next(roundMapper.fromDto(words))
+      this.roundsSbj$.next(roundMapper.fromDto(words));
     }
   }
 
   public updateHintLetters(letter: string): void {
-    this.hintLettersSbj$.next([...this.hintLettersSbj$.getValue(), letter])
+    this.hintLettersSbj$.next([...this.hintLettersSbj$.getValue(), letter]);
   }
 
   public clearHintLetters(): void {
-    this.hintLettersSbj$.next([])
+    this.hintLettersSbj$.next([]);
   }
 
   public updateCurrentRound(word: string): void {
@@ -84,19 +85,19 @@ export class StateService {
                 return {
                   ...wordTemp,
                   completed: true,
-                }
+                };
               }
-              return wordTemp
+              return wordTemp;
             }),
-          }
+          };
         }
-        return round
+        return round;
       }),
-    )
+    );
   }
 
   public warning(open: boolean): void {
-    this.warningSbj$.next(open)
+    this.warningSbj$.next(open);
   }
 
   private clearResult(): void {
@@ -109,10 +110,10 @@ export class StateService {
           return {
             ...word,
             completed: false,
-          }
+          };
         }),
-      }
-    })
-    this.roundsSbj$.next(rounds)
+      };
+    });
+    this.roundsSbj$.next(rounds);
   }
 }

@@ -1,18 +1,17 @@
-import { IBasicElement } from '../types'
 import {
   CELL_BACKGROUND,
   CELL_BACKGROUND_GREEN,
   TEXT_COLOR,
-} from '../constants.ts'
-import { drawRoundRect } from '../utils'
+} from '../constants.ts';
+import { drawRoundRect } from '../utils';
 
-export class ColElement implements IBasicElement {
-  private readonly x: number
-  private readonly y: number
-  private readonly ctx: CanvasRenderingContext2D
-  private readonly size: number
-  private readonly letter: string
-  private hide: boolean = true
+export class ColElement {
+  private readonly x: number;
+  private readonly y: number;
+  private readonly ctx: CanvasRenderingContext2D;
+  private readonly size: number;
+  private readonly letter: string;
+  private hide: boolean = true;
 
   constructor(
     ctx: CanvasRenderingContext2D,
@@ -22,20 +21,20 @@ export class ColElement implements IBasicElement {
     letter: string,
     hide: boolean,
   ) {
-    this.ctx = ctx
-    this.x = x
-    this.y = y
-    this.size = size
-    this.letter = letter
-    this.hide = hide
+    this.ctx = ctx;
+    this.x = x;
+    this.y = y;
+    this.size = size;
+    this.letter = letter;
+    this.hide = hide;
   }
 
   public render(): void {
-    this.create()
+    this.create();
   }
 
   public update(hide: boolean): void {
-    this.hide = hide
+    this.hide = hide;
   }
 
   private create() {
@@ -49,6 +48,6 @@ export class ColElement implements IBasicElement {
       !this.hide ? this.letter : '',
       this.hide ? TEXT_COLOR : CELL_BACKGROUND,
       42,
-    )
+    );
   }
 }

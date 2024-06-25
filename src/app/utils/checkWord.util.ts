@@ -1,4 +1,4 @@
-import { WordRound } from '../types'
+import { WordRound } from '../types';
 
 export function checkWordUtil(
   word: string,
@@ -7,5 +7,5 @@ export function checkWordUtil(
   return words.find(
     wordTemp =>
       !wordTemp.completed && wordTemp.word.toUpperCase() === word.toUpperCase(),
-  )
+  );
 }
