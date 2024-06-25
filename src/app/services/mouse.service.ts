@@ -104,6 +104,18 @@ export class MouseService {
     const touchEnd$ = fromEvent(this.element, 'touchend');
     const touchCancel$ = fromEvent(this.element, 'touchcancel');
 
+      touchMove$
+          .pipe(
+              map((e: unknown) => {
+                  const event = e as TouchEvent;
+                  event.preventDefault();
+                  const touch = event.touches[0];
+                  this.touchX = (touch.clientX - this.rect.left) / this.scaleX;
+                  this.touchY = (touch.clientY - this.rect.top) / this.scaleY;
+              }),
+          )
+          .subscribe();
+
     this.touchBtnState$ = merge(
       touchEnd$.pipe(
         tap(e => e.preventDefault()),
