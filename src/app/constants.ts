@@ -12,8 +12,8 @@ export const MODAL_HEIGHT = 428
 
 /** Margin, padding */
 export const WORD_PADDING = 6
-export const TOP_MARGIN_GRID = 118
-export const TOP_MARGIN_TITLE = 50
+export const TOP_MARGIN_GRID = 90
+export const TOP_MARGIN_TITLE = 35
 export const TOP_MARGIN_HINT = 705
 export const TOP_MARGIN_GAME_PANEL = 940
 export const TOP_MARGIN_MODAL = 363
